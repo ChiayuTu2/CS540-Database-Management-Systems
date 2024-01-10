@@ -12,4 +12,13 @@
 </div>
 
 <h2 align = 'center'>Relation Language</h2>
+    <ol>
+        <li>Datalog
+            <ul>
+                <li>Def : Datalog is a declarative database query language primarily used for deductive databases.
+                <li>def : Datalog 是一種用於演繹型數據庫的聲明式數據庫查詢語言。
+            </ul>
+        <li>Relational Language
+        <li>Relational Algebra
+    </ol>
 
