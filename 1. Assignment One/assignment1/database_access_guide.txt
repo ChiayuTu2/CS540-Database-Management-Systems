@@ -1,0 +1,26 @@
+Database host name is: classmysql.engr.oregonstate.edu
+
+Username is: cs440_ONIDusername or cs540_ONIDusername
+Default password is: last 4 digits of your OSU ID number
+
+Web access: https://classmysql.engr.oregonstate.edu
+
+NOTICE:
+
+Please change your password the first time you access your account. DO NOT use your ONID password as this password could be in config files and is much less secure. To change your password, run the SQL statement:
+
+SET PASSWORD = PASSWORD('password')
+
+Access is only granted from the oregonstate.edu domain. It's enforced at the socket level by the OS on the physical db server. NO EXCEPTIONS. You can access the database either from on campus or by running the campus VPN client:
+
+https://is.oregonstate.edu/vpn
+
+If you forget your password, simply e-mail support saying you forgot it and we'll reset it to the default. Please DO NOT e-mail us the new password. We don't want to know it and we will not reset your account to that.
+
+VERY IMPORTANT:
+
+If you want to keep your data please export it at the end of the term. All databases and associated accounts will be deleted the week after the term ends. No exceptions.
+
+Please note, we will help with technical problems such as inability to access your database. We will defer questions about queries or homework to your instructor.
+
+Good luck and have fun.
