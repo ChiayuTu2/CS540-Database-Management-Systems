@@ -23,7 +23,7 @@
                         <li> ';'  : 表示邏輯或
                     </ul>
             </ul>
-        <li>Relational calculus 
+        <li>Relational Calculus 
             <ul>
                 <li>Def : Relational calculus is a non-procedural query language that forms the theoretical basis of SQL. It focuses on what to retrieve rather than how to retrieve it. There are two types of relational calculus: Tuple Relational Calculus (TRC) and Domain Relational Calculus (DRC). In TRC, queries are expressed as formulas consisting of several variables, predicates, and quantifiers. DRC, on the other hand, is based on specifying a list of domain variables and a formula that describes the relations among these variables. (關係演算是一種非程序化的查詢語言，是 SQL 的理論基礎。它專注於檢索什麼，而不是如何檢索。關係演算有兩種類型：元組關係演算（TRC）和域關係演算（DRC）。在 TRC 中，查詢以包含幾個變量、謂詞和量詞的公式形式表示。而 DRC 則基於指定一個域變量列表和描述這些變量之間關係的公式。)
                 <li>Symbol:
