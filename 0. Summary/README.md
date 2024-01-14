@@ -8,6 +8,12 @@
     <p>📦Summary</p>
     <ul>
         <li>📄Relation Language</li>
+            <ul>
+                <li>Datalog
+                <li>Relational Calculus
+                <li>Relational Algebra
+            </ul>
+        <li>📄SQL
     </ul>
 </div>
 
@@ -49,5 +55,23 @@
                         <li> 並集（Union, ∪）: 並集操作用於合併兩個關係中的元組，結果中包含屬於第一個關係和/或第二個關係的所有元組。
                     </ul>
             </ul>
+    </ol>
+
+<h2 align = 'center'>SQL</h2>
+    <ol>
+        <li>SQL Basics:
+            <ul>
+                <li><strong>SELECT</strong> - Specifies which columns data should be retrieved from.</li>
+                <li><strong>FROM</strong> - Specifies the tables from which to retrieve the data.</li>
+                <li><strong>WHERE</strong> - Applies conditions to filter the resulting data set.</li>
+            </ul>
+        <li>Basic SQL Queries:
+        <li>Query Types:
+        <li>Join Operations:
+        <li>Complex Conditions in Where Clause:
+        <li>Aggregation Functions:
+        <li>Group By Clause: 
+        <li>Set Operations:
+        <li>Recursive Queries:
     </ol>
 
