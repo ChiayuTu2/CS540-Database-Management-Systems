@@ -10,6 +10,7 @@
 <div>
     <p>📦CS550-INTRO-TO-COMPUTER-GRAPHICS</p>
     <ul>
+        <li>📂<a href="https://github.com/ChiayuTu2/CS540-Database-Management-Systems/tree/master/0.%20Summary">0. Summary</a></li>
         <li>📂<a href="https://github.com/ChiayuTu2/CS540-Database-Management-Systems/tree/master/1.%20Assignment%20One">1. Assignment One</a></li>
         <li>📄README.md</li>
     </ul>
