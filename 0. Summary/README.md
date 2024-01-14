@@ -60,11 +60,11 @@
 <h2 align = 'center'>SQL</h2>
     <ol>
         <li>SQL Basics:
-            In the SQL Basics section, we cover the fundamental components of SQL queries, which include:
-
-- **SELECT** - Specifies which columns data should be retrieved from.
-- **FROM** - Specifies the tables from which to retrieve the data.
-- **WHERE** - Applies conditions to filter the resulting data set.
+            <ul>
+                <li><strong>SELECT</strong> - Specifies which columns data should be retrieved from.</li>
+                <li><strong>FROM</strong> - Specifies the tables from which to retrieve the data.</li>
+                <li><strong>WHERE</strong> - Applies conditions to filter the resulting data set.</li>
+            </ul>
         <li>Basic SQL Queries:
         <li>Query Types:
         <li>Join Operations:
