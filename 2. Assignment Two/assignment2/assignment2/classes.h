@@ -10,6 +10,9 @@ ONID: tuchi
 #include <iostream>
 #include <sstream>
 #include <bitset>
+#include <bits/stdc++.h>
+#include <cstdio>
+
 using namespace std;
 
 class Record {
@@ -41,7 +44,8 @@ class StorageBufferManager {
         const int BLOCK_SIZE = 4096; // initialize the  block size allowed in main memory according to the question 
         int numRecords;
         std::vector<std::string> buffer; // Create an empty vector "line" to store strings
-
+        std::string fileName;
+        int bufferSize;
 
 
         // You may declare variables based on your need 
@@ -92,16 +96,73 @@ class StorageBufferManager {
         StorageBufferManager(string NewFileName) {
             
             //initialize your variables
-            
+            fileName = NewFileName;  // Initialize the file name
+            numRecords = 0;          // Initialize the number of records to 0
+            bufferSize = 0;          // Initialize the buffer size to 0
 
             // Create your EmployeeRelation file 
+            // Open the file for writing in binary mode
+            FILE *outfile = fopen(fileName.c_str(), "wb");
+            if(outfile == nullptr){
+                // If file opening error
+                throw std::runtime_error("Failed to open file");
+            }
 
+            fclose(outfile);
             
         }
 
         // Read csv file (Employee.csv) and add records to the (EmployeeRelation)
         void createFromFile(string csvFName) {
             
+            // Open the input file for reading in text model
+            FILE *infile = fopen(csvFName.c_str(), "r");
+            if(infile == nullptr){
+                return;
+            }
+
+            // Declare a string line to hold each line read from csvFName file
+            std::string line;
+
+            // Declare an interger to check the current line number
+            int lineNumber = 1;
+
+            // Read each line from the input file
+            while(std::getline(infile, line)){
+
+                // Test
+                cout << "Line number: " << lineNumber << std::endl;
+                cout << "Line I got: " << line << std::endl;
+
+                // Increase the current line number
+                lineNumber++;
+
+                // Each tuple is in a separate line and the fields of each record are separated by commas
+                // Declare a string vector to hold the individual fields in the current line.
+                std::vector<std::string> fields;
+
+                // Declare a stringstream from the current line to mark the fields
+                std::stringstream stringLine(line);
+
+                // Declare a string variable to hold a mark field
+                std::string mark;
+
+                // Mark the fields in the line, and split it by commas
+                while(std::getline(stringLine, mark, ',')){
+
+                    // Add the marked fields to the vector of fields
+                    fields .push_back(mark);
+                }
+
+                // Create a Record object from the vector fields
+                Record record(fields);
+
+                // Insert the record to the buffer
+                insertRecord(record);
+            }
+
+            // Close the input file
+            fclose(infile);
         }
 
         // Given an ID, find the relevant record and print it
