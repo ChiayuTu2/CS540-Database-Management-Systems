@@ -12,8 +12,8 @@
     <ul>
         <li>📂<a href="https://github.com/ChiayuTu2/CS540-Database-Management-Systems/tree/master/0.%20Summary">0. Summary</a></li>
         <li>📂<a href="https://github.com/ChiayuTu2/CS540-Database-Management-Systems/tree/master/1.%20Assignment%20One">1. Assignment One</a></li>
-        <li>📂<a href="https://github.com/ChiayuTu2/CS540-Database-Management-Systems/tree/master/2.%20Assignment%20Two">2. Assignment Two</a></li>
-        <li>📂<a href="https://github.com/ChiayuTu2/CS540-Database-Management-Systems/tree/master/3.%20Assignment%20Three">3. Assignment Three</a></li>
+        <li>📂<a href="https://github.com/ChiayuTu2/CS540-Database-Management-Systems/tree/master/2.%20Assignment%20Two/assignment2/assignment2">2. Assignment Two</a></li>
+        <li>📂<a href="https://github.com/ChiayuTu2/CS540-Database-Management-Systems/tree/master/3.%20Assignment%20Three/Assignment3/Assignment3">3. Assignment Three</a></li>
         <li>📄README.md</li>
     </ul>
 </div>
