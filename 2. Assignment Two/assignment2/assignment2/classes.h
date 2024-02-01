@@ -42,6 +42,36 @@ class Record {
             cout << "\tBIO: " << bio << "\n";
             cout << "\tMANAGER_ID: " << manager_id << "\n";
         }
+
+        // Function to convert a Record object to a comma-separated string representation
+        std::string toString()
+        {
+            // Concatenate the id, name, bio, and manager_id fields with commas as separators
+            return std::to_string(id) + "," + name + "," + bio + "," + std::to_string(manager_id);
+        }
+
+        // Static function to create a Record object from a comma-separated string representation
+        static Record fromString(const std::string &str)
+        {
+            // Created a vector to store the individual fields of the record
+            std::vector<std::string> fields;
+
+            // Created a stringstream object from the input string
+            std::stringstream ss(str);
+
+            // Initialize a variable to store each field value (token)
+            std::string token;
+
+            // Iterate through the input string, extracting each field value separated by a comma
+            while (getline(ss, token, ','))
+            {
+                // Now Add the extracted field value to the fields vector
+                fields.push_back(token);
+            }
+
+            // Create and return a Record object using the extracted fields
+            return Record(fields);
+        }
 };
 
 
