@@ -20,12 +20,20 @@ class Record {
         int id, manager_id;
         std::string bio, name;
 
-        Record(vector<std::string> fields) {
-            // stoi: used to convert strings to integers.
-            id = stoi(fields[0]);
+        Record(const vector<string>& fields) {
+            if (fields.size() < 4) {
+
+                throw std::invalid_argument("Insufficient fields for initialization");
+            }
+            try {
+                id = stoi(fields[0]);
+                manager_id = stoi(fields[3]);
+            } catch (const std::invalid_argument& e) {
+
+                throw std::invalid_argument("Invalid integer format in fields");
+            }
             name = fields[1];
             bio = fields[2];
-            manager_id = stoi(fields[3]);
         }
 
         void print() {
@@ -52,7 +60,24 @@ class StorageBufferManager {
 
         // Insert new record 
         void insertRecord(Record record) {
+    
+            // Convert the record to the string
+            std::string stringRecord = record.toString();
 
+            // Create new block if buffer is empty or last block cannot accommodate new record
+            if(buffer.empty() || buffer.back().size() + stringRecord.size() + 1 > BLOCK_SIZE){
+
+                buffer.push_back("");
+            }
+
+            // Add a new record to the last block
+            std:: string &lastBlock = buffer.back();
+            lastBlock.append(stringRecord + "\n");
+
+            // Update the number of record
+            numRecords++;
+
+            /*
             // Convert the record to the string
             std::string stringRecord = record.toString();
         
@@ -90,9 +115,20 @@ class StorageBufferManager {
             // Increment the buffer_size and numRecords
             buffer_size++;
             numRecords++;
+            */
         }
 
     public:
+        StorageBufferManager(const std::string &NewFileName):fileName(NewFileName), numRecords(0), bufferSize(0){
+
+            std::ofstream outfile(fileName, std::ios::binary | std::ios::trunc);
+
+            if(!outfile){
+
+                throw std::runtime_error("Failed to open file: " + fileName);
+            }
+        }
+        /*
         StorageBufferManager(string NewFileName) {
             
             //initialize your variables
@@ -111,14 +147,23 @@ class StorageBufferManager {
             fclose(outfile);
             
         }
+        */
 
         // Read csv file (Employee.csv) and add records to the (EmployeeRelation)
-        void createFromFile(string csvFName) {
-            
+        void createFromFile(const std::string &csvFName) {
+            /*
             // Open the input file for reading in text model
             FILE *infile = fopen(csvFName.c_str(), "r");
             if(infile == nullptr){
                 return;
+            }
+            */
+
+            std::ifstream infile(csvFName);
+
+            if(!infile){
+
+                throw std::runtime_error("Failed to open file: " + csvFName);
             }
 
             // Declare a string line to hold each line read from csvFName file
@@ -127,14 +172,11 @@ class StorageBufferManager {
             // Declare an interger to check the current line number
             int lineNumber = 1;
 
-            // Read each line from the input file
             while(std::getline(infile, line)){
-
+                
                 // Test
-                cout << "Line number: " << lineNumber << std::endl;
-                cout << "Line I got: " << line << std::endl;
-
-                // Increase the current line number
+                std::cout << "Line number: " << lineNumber << std::endl;
+                std::cout << "Line I got: " << line << std::endl;
                 lineNumber++;
 
                 // Each tuple is in a separate line and the fields of each record are separated by commas
@@ -145,13 +187,13 @@ class StorageBufferManager {
                 std::stringstream stringLine(line);
 
                 // Declare a string variable to hold a mark field
-                std::string mark;
+                std::string field;
 
-                // Mark the fields in the line, and split it by commas
-                while(std::getline(stringLine, mark, ',')){
+                // Read each line from the input file
+                while (std::getline(stringLine, field, ',')) {
 
                     // Add the marked fields to the vector of fields
-                    fields .push_back(mark);
+                    fields.push_back(field);
                 }
 
                 // Create a Record object from the vector fields
@@ -160,13 +202,49 @@ class StorageBufferManager {
                 // Insert the record to the buffer
                 insertRecord(record);
             }
-
-            // Close the input file
-            fclose(infile);
         }
 
         // Given an ID, find the relevant record and print it
         Record findRecordById(int id) {
-            
+
+            // Traverse all records and find records with matching IDs
+            for(const std::string &block : buffer){
+
+                // Assume each block contains multiple "\n" records
+                // Convert a record into a vector object containing each field of the record
+                std::stringstream blockStream(block);
+
+                std::string recordString;
+
+                while (std::getline(blockStream, recordString)) {
+
+                    // Check each record
+                    std::stringstream recordStream(recordString);
+                    std::vector<std::string> fields;
+                    std::string field;
+
+                    while (std::getline(recordStream, field, ',')) {
+                        
+                        fields.push_back(field);
+                    }
+
+                    if (fields.size() < 4) {
+
+                        // Check if the number of fields is sufficient
+                        continue;
+                    }
+
+                    Record record(fields);
+
+                    if (record.id == id) {
+
+                        // Find the record
+                        return record;
+                    }
+                }
+            }
+
+            // If no matching record is found, throw an exception or return an empty record
+            throw std::runtime_error("Record not found with ID: " + std::to_string(id));
         }
 };
