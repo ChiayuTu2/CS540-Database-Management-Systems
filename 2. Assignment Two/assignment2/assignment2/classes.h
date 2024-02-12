@@ -2,6 +2,9 @@
 Name: Chiayu Tu
 Email: tuchi@oregonstate.edu
 ONID: tuchi
+ssh tuchi@hadoop-master.engr.oregonstate.edu
+g++ -std=c++11 main.cpp -o main.out
+main.out
 */
 
 #include <string>
@@ -15,11 +18,18 @@ ONID: tuchi
 
 using namespace std;
 
+// Create a slot to store the data into the buffer
+struct Slot{
+    int offset;  // Record starting position
+    int length;  // Write dowm the length of the record
+    //bool used;   // Is it in use
+};
+
 class Record {
     public:
         int id, manager_id;
         std::string bio, name;
-
+        /*
         Record(const vector<string>& fields) {
             if (fields.size() < 4) {
 
@@ -34,7 +44,34 @@ class Record {
             }
             name = fields[1];
             bio = fields[2];
+        }       
+        */
+
+        Record(const vector<string>& fields) {
+            if (fields.size() < 4) {
+                throw std::invalid_argument("Insufficient fields for initialization");
+            }
+            try {
+                // Check if fields[0] and fields[3] are not empty and contain only digits (and optionally a minus sign)
+                if (!fields[0].empty() && std::all_of(fields[0].begin(), fields[0].end(), ::isdigit)) {
+                    id = stoi(fields[0]);
+                } else {
+                    throw std::invalid_argument("Invalid ID format");
+                }
+                if (!fields[3].empty() && std::all_of(fields[3].begin(), fields[3].end(), ::isdigit)) {
+                    manager_id = stoi(fields[3]);
+                } else {
+                    throw std::invalid_argument("Invalid Manager ID format");
+                }
+            } catch (const std::invalid_argument& e) {
+                throw std::invalid_argument("Invalid integer format in fields: " + std::string(e.what()));
+            } catch (const std::out_of_range& e) {
+                throw std::out_of_range("Integer value out of range: " + std::string(e.what()));
+            }
+            name = fields[1];
+            bio = fields[2];
         }
+
 
         void print() {
             cout << "\tID: " << id << "\n";
@@ -55,22 +92,61 @@ class Record {
 class StorageBufferManager {
 
     private:
-        
-        const int BLOCK_SIZE = 4096; // initialize the  block size allowed in main memory according to the question 
-        int numRecords;
-        std::vector<std::string> buffer; // Create an empty vector "buffer" to store strings
-        std::string fileName;
-        int bufferSize;
-
 
         // You may declare variables based on your need 
+        const int BLOCK_SIZE = 4096; // initialize the  block size allowed in main memory according to the question 
+        int curBlockIndex = 0;
+        const int Max_BLOCK = 3;   // Can only use three blocks in the assignment
+        int numRecords;
+        std::vector<std::string> buffer; // Create an empty vector "buffer" to store strings
+        std::vector<std::vector<Slot>> slotDirectories; // Slot directory for each block
+        std::string fileName;
+        int bufferSize;
 
         // Insert new record 
         void insertRecord(Record record) {
     
             // Convert the record to the string
             std::string stringRecord = record.toString();
+            // Count the length of the record
+            int recordLength = stringRecord.size() + 1;    // Add 1 for '\n'
 
+            // Check if block has a space for record
+            if(!spaceRecord(curBlockIndex, recordLength)){
+
+                // Move to the next block
+                curBlockIndex = (curBlockIndex + 1) % Max_BLOCK;
+
+                // Flush the next block for late use
+                flushBlock(curBlockIndex);
+            }
+
+            // Insert the record to the current block
+            buffer[curBlockIndex] += stringRecord;
+            Slot newSlot = {static_cast<int>(buffer[curBlockIndex].size()), recordLength};
+            slotDirectories[curBlockIndex].push_back(newSlot);
+        }
+
+        // Check if the block has a space for the record
+        bool spaceRecord(int blockIndex, int recordLength){
+
+            // The current block size
+            int curBlockSize = buffer[blockIndex].size();
+            // The current Slot directories size
+            int curSlotSize = slotDirectories[blockIndex].size() * sizeof(Slot);
+            return curBlockSize + curSlotSize + recordLength + sizeof(Slot) <= BLOCK_SIZE;
+
+        }
+
+        // Flush the block
+        void flushBlock(int blockIndex){
+
+            // Choose the block that needs to flush
+            buffer[blockIndex].clear();
+            slotDirectories[blockIndex].clear();
+        }
+
+            /*
             // Create new block if buffer is empty or last block cannot accommodate new record
             if(buffer.empty() || buffer.back().size() + stringRecord.size() + 1 > BLOCK_SIZE){
 
@@ -82,7 +158,8 @@ class StorageBufferManager {
             lastBlock.append(stringRecord + "\n");
 
             // Update the number of record
-            numRecords++;
+            numRecords++;         
+            */
 
             /*
             // Convert the record to the string
@@ -99,33 +176,18 @@ class StorageBufferManager {
                 // Increment the number of records
                 numRecords++;
             }
-            
-            // Take neccessary steps if capacity is reached (you've utilized all the blocks in main memory)
-            // Add record to the block
-            // Add a record to the last block in the buffer
-            // Use a reference to directly manipulate this element in the buffer instead of creating a copy of it
-            std::string &lastBlock = buffer.back();
-            // Test 
-            std::cout << "Last block content: " << buffer.back() << std::endl;
-
-            // Calculate the rest of the space in the last block
-            int restSpace = BLOCK_SIZE - lastBlock.size();
-            // Test
-            std::cout << "The rest of buffer size: " << restSpace << std::endl;
-            std::cout << "The last block size: " << lastBlock.size() << std::endl;
-
-            // Append the stringRecord to the last block
-            lastBlock.append(stringRecord);
-            // Append a newline character to the last data block to separate records
-            lastBlock.append("\n");
-
-            // Increment the buffer_size and numRecords
-            buffer_size++;
-            numRecords++;
             */
-        }
 
     public:
+        /*
+        StorageBufferManager(){
+
+            // Initialize the three blocks size
+            buffer.resize(Max_BLOCK);
+            slotDirectories.resize(Max_BLOCK);
+        }
+        */
+
         StorageBufferManager(const std::string &NewFileName):fileName(NewFileName), numRecords(0), bufferSize(0){
 
             std::ofstream outfile(fileName, std::ios::binary | std::ios::trunc);
@@ -134,37 +196,14 @@ class StorageBufferManager {
 
                 throw std::runtime_error("Failed to open file: " + fileName);
             }
-        }
-        /*
-        StorageBufferManager(string NewFileName) {
-            
-            //initialize your variables
-            fileName = NewFileName;  // Initialize the file name
-            numRecords = 0;          // Initialize the number of records to 0
-            bufferSize = 0;          // Initialize the buffer size to 0
 
-            // Create your EmployeeRelation file 
-            // Open the file for writing in binary mode
-            FILE *outfile = fopen(fileName.c_str(), "wb");
-            if(outfile == nullptr){
-                // If file opening error
-                throw std::runtime_error("Failed to open file");
-            }
-
-            fclose(outfile);
-            
+            // Initialize the three blocks size
+            buffer.resize(Max_BLOCK);
+            slotDirectories.resize(Max_BLOCK);
         }
-        */
 
         // Read csv file (Employee.csv) and add records to the (EmployeeRelation)
         void createFromFile(const std::string &csvFName) {
-            /*
-            // Open the input file for reading in text model
-            FILE *infile = fopen(csvFName.c_str(), "r");
-            if(infile == nullptr){
-                return;
-            }
-            */
 
             std::ifstream infile(csvFName);
 
@@ -193,29 +232,70 @@ class StorageBufferManager {
                 std::vector<std::string> fields;
 
                 // Declare a stringstream from the current line to mark the fields
-                std::stringstream stringLine(line);
+                std::stringstream ss(line);
 
                 // Declare a string variable to hold a mark field
                 std::string field;
 
                 // Read each line from the input file
-                while (std::getline(stringLine, field, ',')) {
+                while (std::getline(ss, field, ',')) {
 
                     // Add the marked fields to the vector of fields
                     fields.push_back(field);
                 }
+                
+                // Check if the field has enough space
+                if(fields.size() >= 4){
 
-                // Create a Record object from the vector fields
-                Record record(fields);
+                    // Create a Record object from the vector fields
+                    Record record(fields);
 
-                // Insert the record to the buffer
-                insertRecord(record);
+                    // Insert the record to the buffer
+                    insertRecord(record);
+                }
             }
         }
 
         // Given an ID, find the relevant record and print it
         Record findRecordById(int id) {
 
+            for(int i = 0; i < Max_BLOCK; ++i){
+                // Assume each block contains multiple "\n" records
+                // Convert a record into a vector object containing each field of the record
+                std::stringstream ss(buffer[i]);
+                std::string recordString;
+
+                while(std::getline(ss, recordString)){
+
+                    std::vector<std::string> fields;
+                    std::stringstream rs(recordString);
+                    std::string field;
+
+                    while(std::getline(rs, field, ',')){
+
+                        fields.push_back(field);
+                    }
+
+                    if(fields.size() < 4){
+
+                        continue;
+                    }
+
+                    Record record(fields);
+
+                    if(record.id == id){
+
+                        return record;
+                    }
+                }
+
+            }
+
+            throw std::runtime_error("Record not found with ID: " + std::to_string(id));
+        }
+};
+
+            /*
             // Traverse all records and find records with matching IDs
             for(const std::string &block : buffer){
 
@@ -255,5 +335,5 @@ class StorageBufferManager {
 
             // If no matching record is found, throw an exception or return an empty record
             throw std::runtime_error("Record not found with ID: " + std::to_string(id));
-        }
-};
+            */
+

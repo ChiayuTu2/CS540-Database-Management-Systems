@@ -15,37 +15,28 @@ Skeleton code for storage and buffer management
 #include "classes.h"
 using namespace std;
 
-
 int main(int argc, char* const argv[]) {
-
-    // Create the EmployeeRelation file from Employee.csv
     StorageBufferManager manager("EmployeeRelation");
-    manager.createFromFile("Employee.csv");
-    
-    // Loop to lookup IDs until user is ready to quit
-    string input;
-    while (true) {
-        cout << "Enter an ID to search for, or 'quit' to exit: ";
-        cin >> input;
 
-        // Check if the user wants to quit
-        if (input == "quit") {
-            break;
-        }
+    try {
+        manager.createFromFile("Employee.csv");
+    } catch (const runtime_error& e) {
+        cout << "Error: " << e.what() << endl;
+        return 1;
+    }
 
+    int id;
+    cout << "Enter employee ID to look up, or -1 to quit: ";
+    while (cin >> id && id != -1) {
         try {
-            // Convert input to integer
-            int id = stoi(input);
-
-            // Find the record by ID and print it
-            Record record = manager.findRecordById(id);
-            record.print();
-        } catch (const std::invalid_argument& e) {
-            cerr << "Invalid ID format. Please enter a valid integer." << endl;
-        } catch (const std::runtime_error& e) {
-            cerr << "Error: " << e.what() << endl;
+            Record found = manager.findRecordById(id);
+            found.print();
+        } catch (const runtime_error& e) {
+            cout << "Error: " << e.what() << endl;
         }
+        cout << "Enter another employee ID to look up, or -1 to quit: ";
     }
 
     return 0;
 }
+
