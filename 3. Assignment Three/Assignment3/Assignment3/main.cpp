@@ -1,18 +1,11 @@
 /*
-Name: Chiayu Tu
-Email: tuchi@oregonstate.edu
-ONID: tuchi
-ssh tuchi@hadoop-master.engr.oregonstate.edu
-g++ -std=c++11 main.cpp -o main.out
-main.out
+Skeleton code for linear hash indexing
 */
 
-#include <string>
 #include <ios>
 #include <fstream>
 #include <vector>
 #include <string>
-#include <string.h>
 #include <iostream>
 #include <sstream>
 #include <stdexcept>
@@ -20,59 +13,37 @@ main.out
 #include "classes.h"
 using namespace std;
 
+int main() {
+    // Initialize the index with the name of the index file
+    LinearHashIndex myIndex("EmployeeIndex");
 
+    // Create the index from a CSV file containing records
+    std::string csvFileName = "Employee.csv";
+    myIndex.createFromFile(csvFileName);
 
-int main(int argc, char* const argv[]) {
+    std::string input;
 
-    // Create the index
-    LinearHashIndex emp_index("EmployeeIndex");
-
-    // Check if file exists
-    ifstream infile("Employee.csv");
-    if (!infile.is_open()) {
-        cout << "Error opening file Employee.csv" << endl;
-        return 1;
-    }
-
-    // Create the index from file
-    emp_index.createFromFile("Employee.csv");
-
-    // Loop to lookup IDs until user quits
     while (true) {
-        int id;
-        cout << "Enter ID (-1 to quit): ";
-        cin >> id;
+        std::cout << "Enter an ID to search for or type 'quit' to exit: ";
+        std::getline(std::cin, input); // 從標準輸入讀取一行
 
-        if (id == -1) {
+        if (input == "quit") { // 如果用戶輸入"quit"，則退出循環
             break;
         }
 
-        // Find the record
-        Record record = emp_index.findRecordById(id);
-
-        // Print record information
-        if (record.id != -1) {
-            cout << "Record found:" << endl;
-            cout << "ID: " << record.id << endl;
-            cout << "Name: " << record.name << endl;
-        } else {
-            cout << "Record not found." << endl;
+        int searchId;
+        try {
+            searchId = std::stoi(input); // 嘗試將輸入轉換為整數
+        } catch (const std::invalid_argument& e) {
+            std::cout << "Invalid input. Please enter a valid ID or 'quit'." << std::endl;
+            continue; // 如果轉換失敗，提示用戶並繼續循環
         }
+
+        std::cout << "Searching for record with ID: " << searchId << std::endl;
+        Record foundRecord = myIndex.findRecordById(searchId);
+        // 假設你的findRecordById函數已經正確實現，這裡將會處理找到的紀錄
+        // 例如，你可以添加一個方法在Record類中來打印紀錄的詳細信息
     }
 
     return 0;
 }
-/*
-int main(int argc, char* const argv[]) {
-
-    // Create the index
-    LinearHashIndex emp_index("EmployeeIndex");
-    emp_index.createFromFile("Employee.csv");
-    
-    // Loop to lookup IDs until user is ready to quit
-    
-
-    return 0;
-}
-*/
-
